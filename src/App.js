@@ -5,7 +5,7 @@ import { MenuContext } from './index'
 import {Canvas} from "@react-three/fiber";
 import { AmbientLight } from 'three';
 import { useFrame, } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
+import { OrbitControls, PerspectiveCamera, Stars } from '@react-three/drei';
 
 const Sphere = (props) => {
   const ref = useRef();
@@ -68,6 +68,9 @@ function App() {
             <directionalLight position={[2,2,2]} intensity={1}/>
             <ambientLight intensity={0.3}/>
             {spheres}
+            <mesh>
+              <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1}/>
+            </mesh>
           </Canvas>
       </div>
     </div>
