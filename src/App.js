@@ -90,11 +90,18 @@ import { OrbitControls, PerspectiveCamera, Stars } from '@react-three/drei';
     }
     const Mercury = (props) => {
       const ref = useRef();
-      useFrame((state,delta) => {
-        ref.current.position.z = Math.sin(state.clock.elapsedTime)
-        ref.current.position.x = Math.sin(state.clock.elapsedTime)
-        ref.current.position.y = Math.sin(state.clock.elapsedTime)
-      })
+      useFrame(({ clock }) => {
+        const { elapsedTime } = clock;
+        const orbitRadius = 2;
+        const orbitSpeed = 1;
+    
+
+        const x = Math.cos(elapsedTime * orbitSpeed) * orbitRadius;
+        const z = Math.sin(elapsedTime * orbitSpeed) * orbitRadius;
+    
+
+        ref.current.position.set(x, 0, z);
+      });
       return (
         <group>
           <mesh position={props.position} ref={ref} scale={props.size}>
