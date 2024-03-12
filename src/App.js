@@ -4,32 +4,32 @@ import { useState, useContext, useRef } from 'react';
 import { MenuContext } from './index'
 import {Canvas} from "@react-three/fiber";
 import { AmbientLight, SphereGeometry, TextureLoader } from 'three';
-import { useFrame, } from '@react-three/fiber';
+import { useFrame, useLoader } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Stars } from '@react-three/drei';
 
   // const Sphere = (props) => {
-  //   const ref = useRef();
-  //   const ref2= useRef();
-  //   useFrame((state,delta) => {
-  //     ref.current.rotation.y += delta
-  //     ref.current.rotation.x += delta
-  //     ref.current.position.y = Math.sin((state.clock.elapsedTime - props.position[0] - props.position[2]) *0.7)/5 
-  //     ref2.current.rotation.y += delta
-  //     ref2.current.rotation.x += delta
-  //     ref2.current.position.y = Math.sin((state.clock.elapsedTime - props.position[0] - props.position[2]) *0.7) /5
-  //   })
-  //   return (
-  //     <group>
-  //       <mesh position={props.position} ref={ref} scale={props.size}>
-  //             <sphereGeometry args={[1,2,2]} />
-  //             <meshStandardMaterial color={props.color}/>
-  //       </mesh>
-  //       <mesh position={props.position} ref={ref2} scale={[props.size[0] * 1.05, props.size[1] * 1.05, props.size[2] * 1.05]}>
-  //         <sphereGeometry args={[1.05, 2, 2]} />
-  //         <meshBasicMaterial color="white" wireframe />
-  //       </mesh>
-  //     </group>
-  //   )
+    // const ref = useRef();
+    // const ref2= useRef();
+    // useFrame((state,delta) => {
+    //   ref.current.rotation.y += delta
+    //   ref.current.rotation.x += delta
+    //   ref.current.position.y = Math.sin((state.clock.elapsedTime - props.position[0] - props.position[2]) *0.7)/5 
+    //   ref2.current.rotation.y += delta
+    //   ref2.current.rotation.x += delta
+    //   ref2.current.position.y = Math.sin((state.clock.elapsedTime - props.position[0] - props.position[2]) *0.7) /5
+    // })
+    // return (
+    //   <group>
+    //     <mesh position={props.position} ref={ref} scale={props.size}>
+    //           <sphereGeometry args={[1,2,2]} />
+    //           <meshStandardMaterial color={props.color}/>
+    //     </mesh>
+    //     <mesh position={props.position} ref={ref2} scale={[props.size[0] * 1.05, props.size[1] * 1.05, props.size[2] * 1.05]}>
+    //       <sphereGeometry args={[1.05, 2, 2]} />
+    //       <meshBasicMaterial color="white" wireframe />
+    //     </mesh>
+    //   </group>
+    // )
   // }
 
   // const spheres = [];
@@ -64,20 +64,19 @@ import { OrbitControls, PerspectiveCamera, Stars } from '@react-three/drei';
     const Sun = () => {
       const meshRef = useRef();
       const [texture, setTexture] = useState(null);
-    
-      // Load the texture once when the component mounts
       useState(() => {
-        const loadedTexture = new TextureLoader().load('./Assets/sun.gif');
-        setTexture(loadedTexture);
+        const loadedTexture = new TextureLoader().load('sun.gif',
+          (loadedTexture) => {
+            setTexture(loadedTexture);
+          },
+          (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+          },
+          (error) => {
+            console.error('Error loading texture:', error);
+          }
+        );
       }, []);
-    
-      // Animate the texture offset
-      useFrame(() => {
-        if (texture) {
-          meshRef.current.material.map.offset.x += 0.01;
-        }
-      });
-
       return(
         <group>
           {texture && (
@@ -89,8 +88,23 @@ import { OrbitControls, PerspectiveCamera, Stars } from '@react-three/drei';
         </group>
       )
     }
+    const Mercury = (props) => {
+      const ref = useRef();
+      useFrame((state,delta) => {
+        ref.current.position.z = Math.sin(state.clock.elapsedTime)
+        ref.current.position.x = Math.sin(state.clock.elapsedTime)
+        ref.current.position.y = Math.sin(state.clock.elapsedTime)
+      })
+      return (
+        <group>
+          <mesh position={props.position} ref={ref} scale={props.size}>
+                <sphereGeometry args={[1,32,32]} />
+                <meshStandardMaterial color={props.color}/>
+          </mesh>
+        </group>
+      )
+    }
     
-  
     return (
       <div>
         <div className='absolute top-0 z-0 h-screen w-screen grid items-center bg-gray-900'>
@@ -101,6 +115,7 @@ import { OrbitControls, PerspectiveCamera, Stars } from '@react-three/drei';
               <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
             </mesh>
             <Sun />
+            <Mercury size={[0.05,0.05,0.05]} position={[1,1,1]} color={"Blue"}/>
           </Canvas>
         </div>
       </div>
